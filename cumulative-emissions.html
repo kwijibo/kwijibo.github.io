@@ -3,7 +3,13 @@
 * {
   font-family: "PT Sans", sans-serif;
 }
-
+table {
+    font-family: "arial", sans-serif;
+    color: #888;
+}
+td{
+  padding-right: 1em;
+}
 h3 {
   font-size: 14pt;
   margin: 3px;
@@ -13,9 +19,13 @@ h3 {
 select,
 label,
 button,
-div {
+div,
+table,
+tr, 
+td {
   margin: 3px;
 }
+
 
 </style>
 <h3>
@@ -32,7 +42,7 @@ div {
 <div>
   <button id="calc">Calculate Cumulative</button>
   <div id="result"></div>
-
+  <div id="prev-results"></div>
   <pre id="csv" style="display:none">"Data Source","World Development Indicators",
 
 "Last Updated Date","2019-03-21",
@@ -335,11 +345,17 @@ Object.keys(years).forEach(function(k) {
   $('year').appendChild(option)
 })
 
+const prevResults = {}
 
 function getVal(id) {
   const selector = $(id)
   return selector[selector.selectedIndex].value
 }
+function getText(id) {
+  const selector = $(id)
+  return selector[selector.selectedIndex].textContent
+}
+
 
 function calcCumulative() {
   console.log("Calculate cumulative")
@@ -362,8 +378,65 @@ function calcCumulative() {
   if (sum.error) {
     $('result').innerHTML = "Sorry incomplete data for this region"
   } else {
-    $('result').innerHTML = Number(sum.total).toFixed(2) + '  tonnes of CO2'
+      addPrevResult(Number(sum.total).toFixed(2))
+      renderPrevResults()
+      $('result').innerHTML = Number(sum.total).toFixed(2) + '  tonnes of CO2'
   }
+}
+const h = (tag, content, attrs) => {
+      const el = document.createElement(tag)
+      if(content){
+        appendH(el, content)
+      }
+    if(attrs){
+        Object.keys(attrs).forEach(x => {
+        el.setAttribute(x, attrs[x])
+      })
+    }
+      return el
+}
+const appendH = (el, content) => {
+    if(typeof content=== "string"){
+          el.appendChild(document.createTextNode(content))
+    } else if(Array.isArray(content)) {
+        content.forEach(x => {
+            appendH(el, x)
+        })
+    } else {
+        el.appendChild(content)
+    }
+    return el
+}
+
+function renderPrevResults(){
+    const resultTable = Object.values(prevResults).reduce((table, result)=>{
+         return appendH(table, h('tr', [
+            h('td', result.region),
+            h('td', result.year),
+            h('td', [
+                h('span','', {style: 'width: '+parseInt(result.co2/2)+'px; background-color: grey; height: 1em; display:inline-block; margin-right: 0.25em' }),
+                result.co2+'']),
+         ]))
+    }, h('table',
+        h('tr', [
+              h('th', 'Region')
+            , h('th', 'Starting Year')
+            , h('th', 'CO2')]
+            )
+        )
+    )
+    const container =  $('prev-results')
+    console.log(prevResults, resultTable, container)
+    container.innerHTML = ''
+    container.appendChild(resultTable)
+}
+
+function addPrevResult(co2){
+      const region = getText('region')
+      const year =  getText('year')
+      const key = region + ' - ' + year
+      const val = {year, region, co2}
+      prevResults[key] = val
 }
 
 function parseCsv(csv) {
@@ -375,3 +448,4 @@ $("calc").onclick = calcCumulative
 
 </script>
 </body>
+
