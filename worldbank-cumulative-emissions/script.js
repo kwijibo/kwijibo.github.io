@@ -27,9 +27,21 @@ window.onload = function() {
     $('year').appendChild(option)
   })
   renderRegionSelect(regions, regions['United Kingdom'])
+  urlToState()
+ 
+  $('calc').onclick = calcCumulative
+  $('region').onchange = filterYears
+  $('year').onchange = filterRegions
+}
 
-  if (location.search) {
-    location.search
+window.onpopstate = function(){
+    urlToState()
+}
+
+function urlToState(){
+ if (window.location.search) {
+     prevResults = {}
+    window.location.search
       .substring(1)
       .split(',')
       .map(x => x.split(':'))
@@ -41,10 +53,6 @@ window.onload = function() {
       })
     renderPrevResults()
   }
-
-  $('calc').onclick = calcCumulative
-  $('region').onchange = filterYears
-  $('year').onchange = filterRegions
 }
 
 function findKey(val, obj) {
@@ -157,22 +165,24 @@ function appendH(el, content) {
   }
   return el
 }
-console.info({regionMetadata})
 function renderPrevResults() {
   const resultTable = Object.values(prevResults).reduce((table, result) => {
+    const specialNotes = regionMetadata
+      .filter(x => x.TableName == result.region)
+      .map(x => x.SpecialNotes)
+      .join('\n')
+
+    const regionHTML = specialNotes
+      ? h('span', result.region, {
+          style: 'cursor: help',
+          title: specialNotes,
+        })
+      : result.region
+
     return appendH(
       table,
       h('tr', [
-        h(
-          'td',
-          h('a', result.region, {
-              style: 'cursor: help',
-            title: regionMetadata
-              .filter(x => x.TableName == result.region)
-              .map(x => x.SpecialNotes)
-              .join('\n'),
-          }),
-        ),
+        h('td', regionHTML),
         h('td', result.year),
         h('td', [
           h('span', '', {
