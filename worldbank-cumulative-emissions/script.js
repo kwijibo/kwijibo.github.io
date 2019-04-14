@@ -1,4 +1,4 @@
-let table, years, regions
+let table, years, regions, allRegions
 let prevResults = {}
 
 const $ = id => document.getElementById(id)
@@ -9,6 +9,13 @@ window.onload = function() {
   years = headings.slice(0, -5).reduce((a, v, i) => {
     if (v.match(/\d\d\d\d/)) {
       a[v] = i
+    }
+    return a
+  }, {})
+
+  allRegions = table.reduce((a, v, i) => {
+    if (i > 4) {
+      a[v[0]] = i
     }
     return a
   }, {})
@@ -47,7 +54,7 @@ function urlToState(){
       .map(x => x.split(':'))
       .forEach(pair => {
         const year = findKey(pair[0], years)
-        const region = findKey(pair[1], regions)
+        const region = findKey(pair[1], allRegions)
         const co2 = getCO2(pair[0], pair[1])
         if (co2 !== false) addPrevResult(year, region, co2)
       })
