@@ -218,5 +218,5 @@ function addPrevResult(year, region, co2) {
 function parseCsv(csv) {
   return csv
     .split('\n')
-    .map(line => line.split(',').map(v => v.replace(/"/g, '')))
+    .map(line => line.split('","').map(v => v.replace(/"/g, '')))
 }
