@@ -2,7 +2,7 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Power Use Comparisons</title>
+  <title>Power use comparison</title>
 </head>
 
 <body>
@@ -4358,13 +4358,12 @@ function _Browser_load(url)
 	}));
 }
 var author$project$Main$CupOfTea = {$: 'CupOfTea'};
-var author$project$Main$EnergyUse = F3(
-	function (label, useUnit, wattHours) {
-		return {label: label, useUnit: useUnit, wattHours: wattHours};
+var author$project$Main$EnergyUse = F4(
+	function (label, useUnit, wattHours, info) {
+		return {info: info, label: label, useUnit: useUnit, wattHours: wattHours};
 	});
 var author$project$Main$Hour = {$: 'Hour'};
 var author$project$Main$IPhone6 = {$: 'IPhone6'};
-var author$project$Main$Mile = {$: 'Mile'};
 var author$project$Main$Minute = {$: 'Minute'};
 var author$project$Main$Model = F2(
 	function (selected, energyUses) {
@@ -4372,13 +4371,14 @@ var author$project$Main$Model = F2(
 	});
 var author$project$Main$PopcornBag = {$: 'PopcornBag'};
 var author$project$Main$WashingCycle = {$: 'WashingCycle'};
-var author$project$Main$ebike = A3(author$project$Main$EnergyUse, 'assisting a Bosch Activeline e-bike in eco-mode', author$project$Main$Mile, 3.9);
-var author$project$Main$fridgeFreezer = A3(author$project$Main$EnergyUse, 'cooling an A+++ Fridge Freezer', author$project$Main$Hour, 18.26);
-var author$project$Main$ledBulb = A3(author$project$Main$EnergyUse, 'lighting an LED spotlight (346 lumens)', author$project$Main$Hour, 5);
-var author$project$Main$lowEnergyTV = A3(author$project$Main$EnergyUse, 'watching an A++ TV', author$project$Main$Hour, 50);
+var author$project$Main$Mile = {$: 'Mile'};
+var author$project$Main$ebike = A4(author$project$Main$EnergyUse, 'riding an e-bike', author$project$Main$Mile, 3.9, 'based on a Bosch ActiveLine in eco-mode');
+var author$project$Main$electricCar = A4(author$project$Main$EnergyUse, 'driving an electric car', author$project$Main$Mile, 250, 'based on a Nissan Leaf: a Tesla Model S will go 72% of this distance; a Renault Zoe will go 38% further!');
+var author$project$Main$fridgeFreezer = A4(author$project$Main$EnergyUse, 'cooling a fridge-freezer', author$project$Main$Hour, 18.26, 'based on a Miele A+++ 300l Fridge-Freezer');
+var author$project$Main$ledBulb = A4(author$project$Main$EnergyUse, 'lighting an LED spotlight', author$project$Main$Hour, 5, '5w spot light, providing 346 lumens, equivalent to a 50w incandescent');
+var author$project$Main$lowEnergyTV = A4(author$project$Main$EnergyUse, 'watching TV', author$project$Main$Hour, 50, 'A++ TV consuming 50w an hour');
 var author$project$Main$DrinksCan = {$: 'DrinksCan'};
-var author$project$Main$makingDrinksCan = A3(author$project$Main$EnergyUse, 'made from new aluminium', author$project$Main$DrinksCan, 140);
-var author$project$Main$nissanLeaf = A3(author$project$Main$EnergyUse, 'driving a Nissan Leaf', author$project$Main$Mile, 250);
+var author$project$Main$makingDrinksCan = A4(author$project$Main$EnergyUse, 'made from new aluminium', author$project$Main$DrinksCan, 140, 'recycled aluminium would require only 5% of the energy');
 var elm$core$Basics$EQ = {$: 'EQ'};
 var elm$core$Basics$LT = {$: 'LT'};
 var elm$core$Elm$JsArray$foldr = _JsArray_foldr;
@@ -4461,7 +4461,7 @@ var elm$core$Set$toList = function (_n0) {
 };
 var author$project$Main$init = A2(
 	author$project$Main$Model,
-	author$project$Main$makingDrinksCan,
+	author$project$Main$electricCar,
 	_List_fromArray(
 		[
 			author$project$Main$makingDrinksCan,
@@ -4469,16 +4469,15 @@ var author$project$Main$init = A2(
 			author$project$Main$ledBulb,
 			author$project$Main$fridgeFreezer,
 			author$project$Main$ebike,
-			author$project$Main$nissanLeaf,
-			A3(author$project$Main$EnergyUse, 'of tea', author$project$Main$CupOfTea, 33),
-			A3(author$project$Main$EnergyUse, 'of microwave popcorn', author$project$Main$PopcornBag, 27),
-			A3(author$project$Main$EnergyUse, 'using an induction hob on full', author$project$Main$Minute, 33.333),
-			A3(author$project$Main$EnergyUse, 'driving a Tesla Model S Performance', author$project$Main$Mile, 320),
-			A3(author$project$Main$EnergyUse, 'taking a shower (electric shower 9.5kw)', author$project$Main$Minute, 158.3333),
-			A3(author$project$Main$EnergyUse, 'vacuuming (900w compact vacuum cleaner)', author$project$Main$Minute, 15),
-			A3(author$project$Main$EnergyUse, 'being fully recharged', author$project$Main$IPhone6, 22),
-			A3(author$project$Main$EnergyUse, 'using an Apple MacBook Pro 15\" (2.9 GHz)', author$project$Main$Hour, 58.4),
-			A3(author$project$Main$EnergyUse, 'running the washing machine on Baby Care (60ºC)', author$project$Main$WashingCycle, 2200)
+			author$project$Main$electricCar,
+			A4(author$project$Main$EnergyUse, 'of tea', author$project$Main$CupOfTea, 33, 'boiling the water in a normal 3kw kettle'),
+			A4(author$project$Main$EnergyUse, 'of popcorn', author$project$Main$PopcornBag, 27, 'popped in an 800w microwave'),
+			A4(author$project$Main$EnergyUse, 'cooking on an induction hob', author$project$Main$Minute, 33.333, 'assuming the hob is on full power'),
+			A4(author$project$Main$EnergyUse, 'taking a shower', author$project$Main$Minute, 158.3333, '(electric shower 9.5kw)'),
+			A4(author$project$Main$EnergyUse, 'vacuuming', author$project$Main$Minute, 15, 'based on a 900w compact vacuum cleaner'),
+			A4(author$project$Main$EnergyUse, 'charging to full', author$project$Main$IPhone6, 22, ''),
+			A4(author$project$Main$EnergyUse, 'using a laptop', author$project$Main$Hour, 58.4, 'based on an Apple MacBook Pro 15\" (2.9 GHz)'),
+			A4(author$project$Main$EnergyUse, 'washing machine on Baby Care (60ºC)', author$project$Main$WashingCycle, 2200, '')
 		]));
 var author$project$Main$update = F2(
 	function (msg, model) {
@@ -4501,16 +4500,44 @@ var rtfeldman$elm_css$Css$property = F2(
 var rtfeldman$elm_css$Css$color = function (c) {
 	return A2(rtfeldman$elm_css$Css$property, 'color', c.value);
 };
+var rtfeldman$elm_css$Css$EmUnits = {$: 'EmUnits'};
+var elm$core$Maybe$Just = function (a) {
+	return {$: 'Just', a: a};
+};
+var elm$core$Maybe$Nothing = {$: 'Nothing'};
+var elm$core$String$fromFloat = _String_fromNumber;
+var rtfeldman$elm_css$Css$Structure$Compatible = {$: 'Compatible'};
+var rtfeldman$elm_css$Css$Internal$lengthConverter = F3(
+	function (units, unitLabel, numericValue) {
+		return {
+			absoluteLength: rtfeldman$elm_css$Css$Structure$Compatible,
+			calc: rtfeldman$elm_css$Css$Structure$Compatible,
+			flexBasis: rtfeldman$elm_css$Css$Structure$Compatible,
+			fontSize: rtfeldman$elm_css$Css$Structure$Compatible,
+			length: rtfeldman$elm_css$Css$Structure$Compatible,
+			lengthOrAuto: rtfeldman$elm_css$Css$Structure$Compatible,
+			lengthOrAutoOrCoverOrContain: rtfeldman$elm_css$Css$Structure$Compatible,
+			lengthOrMinMaxDimension: rtfeldman$elm_css$Css$Structure$Compatible,
+			lengthOrNone: rtfeldman$elm_css$Css$Structure$Compatible,
+			lengthOrNoneOrMinMaxDimension: rtfeldman$elm_css$Css$Structure$Compatible,
+			lengthOrNumber: rtfeldman$elm_css$Css$Structure$Compatible,
+			lengthOrNumberOrAutoOrNoneOrContent: rtfeldman$elm_css$Css$Structure$Compatible,
+			numericValue: numericValue,
+			textIndent: rtfeldman$elm_css$Css$Structure$Compatible,
+			unitLabel: unitLabel,
+			units: units,
+			value: _Utils_ap(
+				elm$core$String$fromFloat(numericValue),
+				unitLabel)
+		};
+	});
+var rtfeldman$elm_css$Css$em = A2(rtfeldman$elm_css$Css$Internal$lengthConverter, rtfeldman$elm_css$Css$EmUnits, 'em');
 var rtfeldman$elm_css$Css$prop1 = F2(
 	function (key, arg) {
 		return A2(rtfeldman$elm_css$Css$property, key, arg.value);
 	});
 var rtfeldman$elm_css$Css$fontSize = rtfeldman$elm_css$Css$prop1('font-size');
 var elm$core$Basics$lt = _Utils_lt;
-var elm$core$Maybe$Just = function (a) {
-	return {$: 'Just', a: a};
-};
-var elm$core$Maybe$Nothing = {$: 'Nothing'};
 var elm$core$String$length = _String_length;
 var elm$core$String$slice = _String_slice;
 var elm$core$String$dropLeft = F2(
@@ -4533,7 +4560,6 @@ var rtfeldman$elm_css$Css$withPrecedingHash = function (str) {
 		_Utils_chr('#'),
 		str);
 };
-var rtfeldman$elm_css$Css$Structure$Compatible = {$: 'Compatible'};
 var rtfeldman$elm_css$Css$erroneousHex = function (str) {
 	return {
 		alpha: 1,
@@ -4979,32 +5005,8 @@ var rtfeldman$elm_css$Css$hex = function (str) {
 	}
 	return rtfeldman$elm_css$Css$erroneousHex(str);
 };
+var rtfeldman$elm_css$Css$padding = rtfeldman$elm_css$Css$prop1('padding');
 var rtfeldman$elm_css$Css$PtUnits = {$: 'PtUnits'};
-var elm$core$String$fromFloat = _String_fromNumber;
-var rtfeldman$elm_css$Css$Internal$lengthConverter = F3(
-	function (units, unitLabel, numericValue) {
-		return {
-			absoluteLength: rtfeldman$elm_css$Css$Structure$Compatible,
-			calc: rtfeldman$elm_css$Css$Structure$Compatible,
-			flexBasis: rtfeldman$elm_css$Css$Structure$Compatible,
-			fontSize: rtfeldman$elm_css$Css$Structure$Compatible,
-			length: rtfeldman$elm_css$Css$Structure$Compatible,
-			lengthOrAuto: rtfeldman$elm_css$Css$Structure$Compatible,
-			lengthOrAutoOrCoverOrContain: rtfeldman$elm_css$Css$Structure$Compatible,
-			lengthOrMinMaxDimension: rtfeldman$elm_css$Css$Structure$Compatible,
-			lengthOrNone: rtfeldman$elm_css$Css$Structure$Compatible,
-			lengthOrNoneOrMinMaxDimension: rtfeldman$elm_css$Css$Structure$Compatible,
-			lengthOrNumber: rtfeldman$elm_css$Css$Structure$Compatible,
-			lengthOrNumberOrAutoOrNoneOrContent: rtfeldman$elm_css$Css$Structure$Compatible,
-			numericValue: numericValue,
-			textIndent: rtfeldman$elm_css$Css$Structure$Compatible,
-			unitLabel: unitLabel,
-			units: units,
-			value: _Utils_ap(
-				elm$core$String$fromFloat(numericValue),
-				unitLabel)
-		};
-	});
 var rtfeldman$elm_css$Css$pt = A2(rtfeldman$elm_css$Css$Internal$lengthConverter, rtfeldman$elm_css$Css$PtUnits, 'pt');
 var rtfeldman$elm_css$VirtualDom$Styled$Node = F3(
 	function (a, b, c) {
@@ -7315,7 +7317,9 @@ var author$project$Main$bigStrong = function (txt) {
 						rtfeldman$elm_css$Css$fontSize(
 						rtfeldman$elm_css$Css$pt(38)),
 						rtfeldman$elm_css$Css$color(
-						rtfeldman$elm_css$Css$hex('#5779A8'))
+						rtfeldman$elm_css$Css$hex('#5779A8')),
+						rtfeldman$elm_css$Css$padding(
+						rtfeldman$elm_css$Css$em(0.25))
 					]))
 			]),
 		_List_fromArray(
@@ -7338,7 +7342,7 @@ var author$project$Main$unitName = function (x) {
 		case 'DrinksCan':
 			return '330ml drinks can';
 		case 'WashingCycle':
-			return 'cycle';
+			return 'cycle of a ';
 		case 'CupOfTea':
 			return 'cup';
 		case 'Mile':
@@ -7595,11 +7599,9 @@ var myrho$elm_round$Round$round = myrho$elm_round$Round$roundFun(
 			}
 		}));
 var author$project$Main$roundish = function (n) {
-	return (n < 0.9) ? A2(myrho$elm_round$Round$round, 2, n) : ((n < 9) ? A2(myrho$elm_round$Round$round, 1, n) : A2(myrho$elm_round$Round$round, 0, n));
+	return (n < 0.9) ? (A2(myrho$elm_round$Round$round, 0, n * 100) + '%') : ((n < 9) ? A2(myrho$elm_round$Round$round, 1, n) : A2(myrho$elm_round$Round$round, 0, n));
 };
 var elm$core$List$sortBy = _List_sortBy;
-var rtfeldman$elm_css$Css$EmUnits = {$: 'EmUnits'};
-var rtfeldman$elm_css$Css$em = A2(rtfeldman$elm_css$Css$Internal$lengthConverter, rtfeldman$elm_css$Css$EmUnits, 'em');
 var rtfeldman$elm_css$Css$stringsToValue = function (list) {
 	return elm$core$List$isEmpty(list) ? {value: 'none'} : {
 		value: A2(
@@ -7623,7 +7625,6 @@ var rtfeldman$elm_css$Css$fontWeight = function (_n0) {
 };
 var rtfeldman$elm_css$Css$larger = {fontSize: rtfeldman$elm_css$Css$Structure$Compatible, value: 'larger'};
 var rtfeldman$elm_css$Css$lighter = {fontWeight: rtfeldman$elm_css$Css$Structure$Compatible, value: 'lighter'};
-var rtfeldman$elm_css$Css$padding = rtfeldman$elm_css$Css$prop1('padding');
 var rtfeldman$elm_css$Css$cssFunction = F2(
 	function (funcName, args) {
 		return funcName + ('(' + (A2(elm$core$String$join, ', ', args) + ')'));
@@ -7756,7 +7757,12 @@ var author$project$Main$view = function (model) {
 								[
 									author$project$Main$bigStrong(
 									author$project$Main$roundish(entry.num)),
-									rtfeldman$elm_css$Html$Styled$text(' ' + (entry.unitName + 's ')),
+									rtfeldman$elm_css$Html$Styled$text(
+									_Utils_ap(
+										(entry.num < 1) ? ' of a ' : ' ',
+										_Utils_ap(
+											entry.unitName,
+											(entry.num < 1) ? ' ' : 's '))),
 									A2(
 									rtfeldman$elm_css$Html$Styled$a,
 									_List_fromArray(
