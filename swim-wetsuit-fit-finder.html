@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Swimming Wetsuit Size Fit Finder</title>
+    <style>
+        :root {
+            --bg-color: #f4f6f9;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --primary: #0284c7;
+            --primary-hover: #0369a1;
+            --border: #e2e8f0;
+            --success: #22c55e;
+            --warning: #eab308;
+            --danger: #ef4444;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.5;
+            padding: 2rem 1rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        header h1 {
+            font-size: 2.25rem;
+            color: #0f172a;
+            margin-bottom: 0.5rem;
+        }
+
+        header p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+
+        .app-layout {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 2rem;
+            align-items: start;
+        }
+
+        @media (max-width: 900px) {
+            .app-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .sidebar {
+            background: var(--card-bg);
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            border: 1px solid var(--border);
+            position: sticky;
+            top: 1rem;
+        }
+
+        .results-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+        }
+
+        .gender-toggle {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem;
+            background: #f1f5f9;
+            padding: 0.25rem;
+            border-radius: 8px;
+        }
+
+        .gender-toggle button {
+            border: none;
+            background: transparent;
+            padding: 0.5rem;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: var(--text-muted);
+        }
+
+        .gender-toggle button.active {
+            background: var(--card-bg);
+            color: var(--primary);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .input-wrap {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .input-wrap input[type="range"] {
+            flex: 1;
+            accent-color: var(--primary);
+        }
+
+        .input-wrap input[type="number"] {
+            width: 70px;
+            padding: 0.4rem;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .size-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            transition: transform 0.2s;
+        }
+
+        .size-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0.75rem;
+        }
+
+        .brand-info h2 {
+            font-size: 1.3rem;
+            color: #0f172a;
+        }
+
+        .brand-info span {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .score-badge {
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 1rem;
+            color: #fff;
+            text-align: center;
+        }
+
+        .metric-row {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .metric-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .bar-container {
+            height: 12px;
+            background: #e2e8f0;
+            border-radius: 6px;
+            position: relative;
+            overflow: visible;
+        }
+
+        .target-zone {
+            position: absolute;
+            height: 100%;
+            background: #cbd5e1;
+            border-radius: 6px;
+        }
+
+        .indicator-dot {
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            top: -2px;
+            transform: translateX(-50%);
+            border: 2px solid #fff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            z-index: 2;
+        }
+
+        .dynamics-box {
+            background: #f8fafc;
+            border-left: 4px solid var(--primary);
+            padding: 0.75rem;
+            border-radius: 0 8px 8px 0;
+            font-size: 0.9rem;
+            color: #334155;
+            font-style: italic;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 3rem;
+            background: var(--card-bg);
+            border-radius: 12px;
+            border: 1px dashed var(--border);
+            color: var(--text-muted);
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Swimming/Triathlon Wetsuit Fit Finder</h1>
+        <p>Cross-brand sizing algorithm aligning your precise dimensions with official UK metrics</p>
+    </header>
+
+
+ <div class="app-layout">
+        <!-- Input Sidebar -->
+        <div class="sidebar">
+            <div class="form-group">
+                <label>Gender Selection</label>
+                <div class="gender-toggle">
+                    <button id="btn-male" class="active" onclick="setGender('male')">Male</button>
+                    <button id="btn-female" onclick="setGender('female')">Female</button>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="height">Height (cm)</label>
+                <div class="input-wrap">
+                    <input type="range" id="height-slide" min="140" max="220" value="178" oninput="updateVal('height', this.value)">
+                    <input type="number" id="height-num" min="140" max="220" value="178" oninput="updateVal('height', this.value)">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="weight">Weight (kg)</label>
+                <div class="input-wrap">
+                    <input type="range" id="weight-slide" min="40" max="130" value="74" oninput="updateVal('weight', this.value)">
+                    <input type="number" id="weight-num" min="40" max="130" value="74" oninput="updateVal('weight', this.value)">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="chest">Chest Circumference (cm)</label>
+                <div class="input-wrap">
+                    <input type="range" id="chest-slide" min="70" max="140" value="100" oninput="updateVal('chest', this.value)">
+                    <input type="number" id="chest-num" min="70" max="140" value="100" oninput="updateVal('chest', this.value)">
+                </div>
+            </div>
+        </div>
+
+        <!-- Dynamic Results Panel -->
+        <div class="results-panel" id="results-target">
+            <!-- Output rendered here by javascript -->
+        </div>
+    </div>
+</div>
+
+<script>
+    // Database of UK Wetsuit Size Brackets
+    const database = {
+        male: [
+            {
+                brand: "Alpkit", model: "Terrapin (Natural Stretch)",
+                sizes: [
+                    { name: "XS", h: [152, 168], w: [55, 65] },
+                    { name: "S", h: [163, 178], w: [60, 70] },
+                    { name: "ST", h: [170, 185], w: [65, 75] },
+                    { name: "Short & Strong", h: [165, 180], w: [75, 85] },
+                    { name: "M", h: [173, 185], w: [70, 80] },
+                    { name: "MT", h: [175, 188], w: [70, 80] },
+                    { name: "L", h: [175, 188], w: [80, 90] },
+                    { name: "XL", h: [175, 188], w: [90, 100] },
+                    { name: "Tall & Strong", h: [178, 193], w: [80, 115] }
+                ]
+            },
+            {
+                brand: "Zone3", model: "Men's Collection",
+                sizes: [
+                    { name: "S", h: [163, 173], w: [55, 65], c: [79, 91] },
+                    { name: "SM", h: [170, 178], w: [62, 70], c: [89, 97] },
+                    { name: "ST", h: [175, 191], w: [64, 72], c: [89, 97] },
+                    { name: "M", h: [173, 183], w: [68, 74], c: [97, 102] },
+                    { name: "MT", h: [175, 191], w: [68, 78], c: [97, 102] },
+                    { name: "ML", h: [173, 188], w: [75, 82], c: [102, 107] },
+                    { name: "L", h: [178, 191], w: [82, 92], c: [107, 112] },
+                    { name: "XL", h: [183, 196], w: [92, 100], c: [112, 122] },
+                    { name: "XXL", h: [183, 196], w: [97, 115], c: [117, 127] }
+                ]
+            },
+            {
+                brand: "HUUB", model: "Core Series",
+                sizes: [
+                    { name: "XS", h: [145, 160], w: [50, 60] },
+                    { name: "ST", h: [173, 183], w: [54, 64] },
+                    { name: "S", h: [160, 170], w: [59, 70] },
+                    { name: "SMT", h: [173, 183], w: [68, 76] },
+                    { name: "M", h: [170, 185], w: [65, 75] },
+                    { name: "MT", h: [180, 191], w: [72, 80] },
+                    { name: "ML", h: [178, 191], w: [78, 85] },
+                    { name: "L", h: [180, 193], w: [85, 95] },
+                    { name: "XL", h: [183, 203], w: [95, 100] },
+                    { name: "XXL", h: [185, 208], w: [100, 120] },
+                    { name: "SS", h: [170, 185], w: [88, 100] }
+                ]
+            },
+            {
+                brand: "Orca", model: "Openwater Fit",
+                sizes: [
+                    { name: "Size 4", h: [157, 170], w: [56, 61], c: [85, 91] },
+                    { name: "Size 5", h: [162, 170], w: [61, 66], c: [90, 95] },
+                    { name: "Size 6", h: [167, 175], w: [67, 74], c: [95, 99] },
+                    { name: "MT / 6T", h: [177, 190], w: [68, 76], c: [95, 99] },
+                    { name: "Size 7", h: [173, 185], w: [75, 82], c: [98, 104] },
+                    { name: "Size 8", h: [180, 188], w: [82, 89], c: [104, 108] },
+                    { name: "Size 9", h: [185, 193], w: [89, 97], c: [108, 113] },
+                    { name: "Size 10", h: [190, 196], w: [98, 109], c: [114, 124] },
+                    { name: "Size 11", h: [193, 200], w: [107, 120], c: [123, 134] }
+                ]
+            },
+            {
+                brand: "Blueseventy", model: "Helix & Reaction",
+                sizes: [
+                    { name: "XS", h: [147, 160], w: [55, 65], c: [76, 81] },
+                    { name: "SM", h: [160, 170], w: [64, 75], c: [81, 86] },
+                    { name: "SMT", h: [168, 182], w: [68, 78], c: [81, 86] },
+                    { name: "M", h: [172, 184], w: [72, 85], c: [86, 91] },
+                    { name: "MT", h: [180, 188], w: [73, 86], c: [86, 91] },
+                    { name: "ML", h: [182, 190], w: [80, 90], c: [91, 96] },
+                    { name: "L", h: [184, 194], w: [87, 100], c: [96, 102] },
+                    { name: "XL", h: [185, 200], w: [95, 115], c: [102, 107] },
+                    { name: "XXL", h: [185, 200], w: [104, 120], c: [107, 112] }
+                ]
+            },
+            {
+                brand: "AquaSkin", model: "Full Suit",
+                sizes: [
+                    { name: "XS", h: [150, 165], w: [55, 63] },
+                    { name: "S", h: [165, 175], w: [63, 73] },
+                    { name: "M", h: [173, 185], w: [70, 80] },
+                    { name: "ML", h: [178, 190], w: [75, 90] },
+                    { name: "L", h: [185, 195], w: [85, 97] },
+                    { name: "XL", h: [190, 205], w: [94, 110] },
+                    { name: "2XL", h: [200, 220], w: [110, 130] }
+                ]
+            }
+        ],
+        female: [
+            {
+                brand: "Alpkit", model: "Terrapin (Natural Stretch)",
+                sizes: [
+                    { name: "XS", h: [150, 160], w: [45, 55] },
+                    { name: "S", h: [152, 163], w: [50, 60] },
+                    { name: "M", h: [163, 175], w: [55, 65] },
+                    { name: "L", h: [163, 175], w: [65, 75] },
+                    { name: "Short & Strong", h: [158, 168], w: [70, 80] },
+                    { name: "Tall & Strong", h: [173, 188], w: [65, 75] },
+                    { name: "XL", h: [173, 188], w: [70, 100] }
+                ]
+            },
+            {
+                brand: "Zone3", model: "Women's Collection",
+                sizes: [
+                    { name: "XS", h: [147, 163], w: [46, 53], c: [79, 84] },
+                    { name: "S", h: [160, 168], w: [54, 61], c: [84, 89] },
+                    { name: "SM", h: [157, 168], w: [60, 70], c: [91, 97] },
+                    { name: "ST", h: [170, 183], w: [54, 64], c: [84, 91] },
+                    { name: "M", h: [165, 178], w: [60, 67], c: [89, 94] },
+                    { name: "ML", h: [165, 178], w: [68, 77], c: [94, 102] },
+                    { name: "L", h: [168, 183], w: [68, 78], c: [94, 99] },
+                    { name: "XL", h: [168, 198], w: [73, 83], c: [99, 107] },
+                    { name: "XXL", h: [168, 198], w: [87, 93], c: [104, 109] }
+                ]
+            },
+            {
+                brand: "HUUB", model: "Core Series",
+                sizes: [
+                    { name: "XXS", h: [135, 155], w: [41, 50] },
+                    { name: "XS", h: [145, 165], w: [49, 55] },
+                    { name: "S", h: [152, 168], w: [53, 60] },
+                    { name: "M", h: [157, 175], w: [55, 64] },
+                    { name: "ML", h: [165, 180], w: [63, 70] },
+                    { name: "L", h: [168, 183], w: [65, 75] },
+                    { name: "XL", h: [173, 188], w: [71, 87] },
+                    { name: "SS", h: [157, 175], w: [73, 80] }
+                ]
+            },
+            {
+                brand: "Orca", model: "Openwater Fit",
+                sizes: [
+                    { name: "XS", h: [144, 160], w: [46, 53], c: [78, 83] },
+                    { name: "XST", h: [157, 167], w: [50, 57], c: [79, 85] },
+                    { name: "S", h: [157, 167], w: [54, 61], c: [83, 89] },
+                    { name: "ST", h: [170, 185], w: [60, 67], c: [83, 89] },
+                    { name: "M", h: [165, 177], w: [60, 67], c: [89, 94] },
+                    { name: "MW", h: [165, 177], w: [83, 95], c: [108, 112] },
+                    { name: "L", h: [170, 185], w: [66, 74], c: [94, 99] },
+                    { name: "LW", h: [170, 185], w: [95, 117], c: [118, 122] },
+                    { name: "XL", h: [177, 189], w: [73, 79], c: [99, 104] }
+                ]
+            },
+            {
+                brand: "Blueseventy", model: "Helix & Reaction",
+                sizes: [
+                    { name: "WS", h: [147, 160], w: [49, 55], c: [76, 84] },
+                    { name: "WMS", h: [152, 165], w: [53, 60], c: [81, 89] },
+                    { name: "WM", h: [160, 175], w: [56, 64], c: [86, 94] },
+                    { name: "WML", h: [165, 180], w: [63, 72], c: [91, 99] },
+                    { name: "WMA", h: [160, 175], w: [66, 76], c: [94, 102] },
+                    { name: "WL", h: [170, 183], w: [70, 77], c: [97, 104] },
+                    { name: "WLA", h: [170, 183], w: [75, 91], c: [102, 114] },
+                    { name: "WXLA", h: [170, 183], w: [88, 105], c: [107, 119] }
+                ]
+            },
+            {
+                brand: "AquaSkin", model: "Full Suit",
+                sizes: [
+                    { name: "XS", h: [145, 155], w: [45, 52] },
+                    { name: "S", h: [155, 165], w: [50, 57]},
+                    { name: "M", h: [165, 175], w: [54, 64]},
+                    { name: "L", h: [173, 185], w: [64, 75]},
+                    { name: "XL", h: [185, 195], w: [75, 85]}
+                ]
+            }
+        ]
+    };
+
+/*
+WETSUIT TRIATHLON SIZE GUIDE
+
+Male
+HEIGHT (CM) 150 - 165,  165 - 175, 173 - 185, 178 - 190, 185 - 195, 190 - 205,  200+ 
+
+WEIGHT (KG) 55 - 63, 63 - 73, 70 - 80, 75 - 90, 85-97, 94 - 110, 110+ 
+
+Female
+HEIGHT (INCH/CM) 145 - 155, 155 - 165, 165 - 175, 173 - 185, 185+
+WEIGHT (LB/KG) 45 - 52, 50 - 57, 54 - 64, 64 - 75, 75+
+
+XS M ML L XL 2XL XS L XL
+
+NOTE: THIS CHART IS INTENDED TO BE USED AS A GENERAL SIZING GUIDELINE.
+
+A AQUASPHERE
+*/
+//AQUASKIN FULL SUIT MEN SIZES 
+    
+// HEIGHT WEIGHT CM INCH KG LB 
+// XS 150-165 59-65 55-63 121-143 
+// S 165-175 65-69 63-73 139-161 
+// M 173-185 68-73 70-80 155-175 
+// ML 178-190 70-75 75-90 165-198 
+// L 185-195 73-76 85-97 187-214 
+// XL 190-205 75-80 94-110 207-242 
+// 2XL 200+ 78+ 110+ 242+ 
+
+    let currentUser = {
+        gender: 'male',
+        height: 178,
+        weight: 74,
+        chest: 100
+    };
+
+    function setGender(gender) {
+        currentUser.gender = gender;
+        document.getElementById('btn-male').classList.toggle('active', gender === 'male');
+        document.getElementById('btn-female').classList.toggle('active', gender === 'female');
+        calculateFits();
+    }
+
+    function updateVal(key, val) {
+        const numVal = parseInt(val) || 0;
+        currentUser[key] = numVal;
+        
+        document.getElementById(`${key}-slide`).value = numVal;
+        document.getElementById(`${key}-num`).value = numVal;
+        calculateFits();
+    }
+
+    function computeMetricScore(val, min, max) {
+        if (val < min || val > max) return -1; // Out of range completely
+        const center = (min + max) / 2;
+        const halfRange = (max - min) / 2;
+        if (halfRange === 0) return 100;
+        const deviation = Math.abs(val - center) / halfRange; 
+        return Math.max(0, 100 * (1 - deviation));
+    }
+
+    function getRelativePosition(val, min, max) {
+        if (max === min) return 50;
+        const pct = ((val - min) / (max - min)) * 100;
+        return Math.min(Math.max(pct, 0), 100);
+    }
+
+    // Displays target zones inside the track container
+    function renderTargetZone(min, max, globalMin, globalMax) {
+        const range = globalMax - globalMin;
+        if (range <= 0) return '';
+        const left = ((min - globalMin) / range) * 100;
+        const width = ((max - min) / range) * 100;
+        return `<div class="target-zone" style="left: ${left}%; width: ${width}%;"></div>`;
+    }
+
+    function getStatusColor(score) {
+        if (score < 0) return 'var(--danger)';
+        if (score >= 60) return '#22c55e'; // Safe green
+        return '#eab308'; // Warning orange
+    }
+
+    function generateInsight(metrics, name) {
+        const h = metrics.height;
+        const w = metrics.weight;
+        const c = metrics.chest;
+
+        if (h.score >= 75 && w.score >= 75 && (c === null || c.score >= 75)) {
+            return "Exceptional geometry match. Sits perfectly in the central structural core of this size for an ideal balance of warmth and stroke flexibility.";
+        }
+        
+        // Check weight bounds if match score is tight
+        if (w.score >= 0 && w.score < 30) {
+            const center = (w.min + w.max) / 2;
+            if (w.val > center) {
+                return "Leaning heavily towards the upper weight limit. Expect a highly performance-oriented compression profile; if you have broader shoulders, consider scaling up.";
+            } else {
+                return "Leaning towards the lower weight limit. Expect a slightly relaxed compression profile; this may result in easier fit and extra comfort, but might allow minor water flushing.";
+            }
+        }
+        
+        // Check height bounds if match score is tight
+        if (h.score >= 0 && h.score < 30) {
+            const center = (h.min + h.max) / 2;
+            if (h.val > center) {
+                return "Maxing out the vertical limit of the torso. Torso panel stretch will be at peak capacity—highly hydrodynamic but can feel restrictive during dry fitting.";
+            } else {
+                return "Near the lower height limit. Torso panel will be under less tension; you will have great shoulder range of motion, but watch for folding around the lower back or neck.";
+            }
+        }
+        return "Viable pattern fit. Provides appropriate technical compression thresholds for standardized UK open-water swimming training profiles.";
+    }
+
+    function calculateFits() {
+        const currentSet = database[currentUser.gender];
+        let validMatches = [];
+
+        currentSet.forEach(b => {
+            b.sizes.forEach(s => {
+                const hScore = computeMetricScore(currentUser.height, s.h[0], s.h[1]);
+                const wScore = computeMetricScore(currentUser.weight, s.w[0], s.w[1]);
+                const cScore = s.c ? computeMetricScore(currentUser.chest, s.c[0], s.c[1]) : null;
+
+                // Wetsuits are restrictive: if height or weight are fully out of bounds, the suit won't fit safely
+                if (hScore >= 0 && wScore >= 0 && (cScore === null || cScore >= 0)) {
+                    let totalScore = 0;
+                    if (cScore !== null) {
+                        totalScore = (hScore * 0.35) + (wScore * 0.45) + (cScore * 0.20);
+                    } else {
+                        totalScore = (hScore * 0.45) + (wScore * 0.55); // Redistribute without chest
+                    }
+
+                    validMatches.push({
+                        brand: b.brand,
+                        model: b.model,
+                        sizeName: s.name,
+                        score: Math.round(totalScore),
+                        metrics: {
+                            height: { val: currentUser.height, min: s.h[0], max: s.h[1], score: hScore },
+                            weight: { val: currentUser.weight, min: s.w[0], max: s.w[1], score: wScore },
+                            chest: s.c ? { val: currentUser.chest, min: s.c[0], max: s.c[1], score: cScore } : null
+                        }
+                    });
+                }
+            });
+        });
+
+        // Sort by fit score descending
+        validMatches.sort((a, b) => b.score - a.score);
+
+        renderResults(validMatches);
+    }
+
+    function renderResults(matches) {
+        const target = document.getElementById('results-target');
+        if (!target) return;
+        
+        if (matches.length === 0) {
+            target.innerHTML = `
+                <div class="no-results">
+                    <h3>No Direct Pattern Matches Found</h3>
+                    <p>Your current dimension metrics fall outside regular sizing grids. Try minor parameter updates to check borderline brand tolerances.</p>
+                </div>`;
+            return;
+        }
+
+        let html = '';
+        matches.forEach(m => {
+            const hPct = getRelativePosition(m.metrics.height.val, m.metrics.height.min, m.metrics.height.max);
+            const wPct = getRelativePosition(m.metrics.weight.val, m.metrics.weight.min, m.metrics.weight.max);
+            const cPct = m.metrics.chest ? getRelativePosition(m.metrics.chest.val, m.metrics.chest.min, m.metrics.chest.max) : null;
+
+            const badgeColor = m.score >= 75 ? '#22c55e' : (m.score >= 50 ? '#eab308' : '#f97316');
+            const insightText = generateInsight(m.metrics, m.sizeName);
+
+            // We calculate target zones relative to input bounds
+            // Height bounds: 140 to 220
+            // Weight bounds: 40 to 130
+            // Chest bounds: 70 to 140
+            const hTargetZone = renderTargetZone(m.metrics.height.min, m.metrics.height.max, 140, 220);
+            const wTargetZone = renderTargetZone(m.metrics.weight.min, m.metrics.weight.max, 40, 130);
+            const cTargetZone = m.metrics.chest ? renderTargetZone(m.metrics.chest.min, m.metrics.chest.max, 70, 140) : '';
+
+            // User indicator dots relative to slider bounds
+            const hUserPct = getRelativePosition(m.metrics.height.val, 140, 220);
+            const wUserPct = getRelativePosition(m.metrics.weight.val, 40, 130);
+            const cUserPct = m.metrics.chest ? getRelativePosition(m.metrics.chest.val, 70, 140) : null;
+
+            html += `
+                <div class="size-card">
+                    <div class="card-header">
+                        <div class="brand-info">
+                            <h2>${m.brand} &mdash; Size ${m.sizeName}</h2>
+                            <span>${m.model}</span>
+                        </div>
+                        <div class="score-badge" style="background: ${badgeColor};">
+                            ${m.score}% Match
+                        </div>
+                    </div>
+
+                    <!-- Height Track -->
+                    <div class="metric-row">
+                        <div class="metric-label">
+                            <span>Height Range: ${m.metrics.height.min} - ${m.metrics.height.max} cm</span>
+                            <span>Current: ${m.metrics.height.val} cm</span>
+                        </div>
+                        <div class="bar-container">
+                            ${hTargetZone}
+                            <div class="indicator-dot" style="left: ${hUserPct}%; background: ${getStatusColor(m.metrics.height.score)};"></div>
+                        </div>
+                    </div>
+
+                    <!-- Weight Track -->
+                    <div class="metric-row">
+                        <div class="metric-label">
+                            <span>Weight Range: ${m.metrics.weight.min} - ${m.metrics.weight.max} kg</span>
+                            <span>Current: ${m.metrics.weight.val} kg</span>
+                        </div>
+                        <div class="bar-container">
+                            ${wTargetZone}
+                            <div class="indicator-dot" style="left: ${wUserPct}%; background: ${getStatusColor(m.metrics.weight.score)};"></div>
+                        </div>
+                    </div>
+
+                    <!-- Chest Track (Conditional) -->
+                    ${m.metrics.chest ? `
+                    <div class="metric-row">
+                        <div class="metric-label">
+                            <span>Chest Range: ${m.metrics.chest.min} - ${m.metrics.chest.max} cm</span>
+                            <span>Current: ${m.metrics.chest.val} cm</span>
+                        </div>
+                        <div class="bar-container">
+                            ${cTargetZone}
+                            <div class="indicator-dot" style="left: ${cUserPct}%; background: ${getStatusColor(m.metrics.chest.score)};"></div>
+                        </div>
+                    </div>
+                    ` : ''}
+
+                    <div class="dynamics-box">
+                        <strong>Fit Dynamics:</strong> ${insightText}
+                    </div>
+                </div>
+            `;
+        });
+
+        target.innerHTML = html;
+    }
+
+    // Initialize application execution
+    calculateFits();
+</script>
+</body>
+</html>
